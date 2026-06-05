@@ -12,7 +12,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getShowcaseProjects } from '@/lib/cms';
 import { ArrowRight } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 export default async function LiveProjectsSection() {
@@ -71,13 +70,12 @@ export default async function LiveProjectsSection() {
               )}
               <div className="flex flex-wrap gap-2">
                 {project.tags?.slice(0, 3).map(tag => (
-                  <Badge
+                  <span
                     key={tag}
-                    variant="secondary"
-                    className="rounded-full bg-zinc-100 dark:bg-zinc-800 text-xs px-3 py-1"
+                    className="inline-flex items-center rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-xs font-medium px-3 py-1"
                   >
                     {tag}
-                  </Badge>
+                  </span>
                 ))}
               </div>
             </div>

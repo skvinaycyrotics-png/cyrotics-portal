@@ -231,7 +231,7 @@ export default function AdminProjectsPage() {
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${STATUS_STYLES[p.status] || STATUS_STYLES.planning}`}>
                       {p.status.replace('_', ' ')}
                     </span>
-                    {p.showOnWebsite && <Globe className="h-3 w-3 text-cyan-400" title="Shown on website" />}
+                    {p.showOnWebsite && <span title="Shown on website"><Globe className="h-3 w-3 text-cyan-400" /></span>}
                   </div>
                   <h3 className="text-base font-semibold text-white truncate">{p.name}</h3>
                   <p className="text-xs text-slate-400 mt-0.5 flex items-center gap-1">

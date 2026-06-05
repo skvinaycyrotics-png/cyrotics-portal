@@ -32,7 +32,7 @@ const PERKS = [
 export default async function CareersPage() {
   const jobs = await getJobs();
 
-  const departments = [...new Set(jobs.map(j => j.department).filter(Boolean))] as string[];
+  const departments = Array.from(new Set(jobs.map(j => j.department).filter((d): d is string => Boolean(d))));
 
   const jobsByDept = departments.length
     ? departments.reduce((acc, dept) => {

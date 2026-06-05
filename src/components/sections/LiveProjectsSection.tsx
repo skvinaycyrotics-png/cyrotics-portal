@@ -12,7 +12,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getShowcaseProjects } from '@/lib/cms';
 import { ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
 export default async function LiveProjectsSection() {
   const projects = await getShowcaseProjects(6);
@@ -33,11 +32,14 @@ export default async function LiveProjectsSection() {
               Explore our portfolio of successfully delivered projects.
             </p>
           </div>
-          <Button asChild variant="outline" className="rounded-full">
-            <Link href="/projects">
-              View All Projects <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
+          
+          {/* Styled native Link replicating the Shadcn outline button perfectly */}
+          <Link 
+            href="/projects"
+            className="inline-flex items-center justify-center rounded-full text-sm font-medium transition-colors border border-zinc-200 dark:border-zinc-800 bg-transparent shadow-sm hover:bg-zinc-100 dark:hover:bg-zinc-800 text-foreground h-10 px-5 py-2 font-medium"
+          >
+            View All Projects <ArrowRight className="ml-2 h-4 w-4" />
+          </Link>
         </div>
 
         {/* Grid */}

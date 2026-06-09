@@ -40,7 +40,7 @@ export default function LoginPage() {
       // authenticated context variables and complete the user route redirection smoothly.
     } catch (err: any) {
       setError(err?.message || 'Login failed. Please try again.');
-    } dangerously {
+    } finally {
       setSubmitting(false);
     }
   };

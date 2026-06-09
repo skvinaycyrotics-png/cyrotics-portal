@@ -26,11 +26,23 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
     setSubmitting(true);
+    
     try {
       const result = await login(form.email, form.password, requires2FA ? form.twoFactorCode : undefined);
-      if (result.requiresTwoFactor) setRequires2FA(true);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Login failed. Please try again.');
+      
+      if (result && result.requiresTwoFactor) {
+        setRequires2FA(true);
+        return;
+      }
+
+      // 🚀 FIXED: Programmatically route right here immediately upon a verified return response 
+      // instead of solely depending on the useEffect listener hook to prevent state crash reloads
+      if (result && result.user) {
+        router.replace(result.user.role === 'admin' ? '/admin/dashboard' : '/portal/dashboard');
+      }
+    } catch (err: any) {
+      // 🚀 FIXED: Gracefully extract error text fields thrown by your ApiError framework classes
+      setError(err?.message || 'Login failed. Please try again.');
     } finally {
       setSubmitting(false);
     }

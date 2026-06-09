@@ -30,18 +30,16 @@ export default function LoginPage() {
     try {
       const result = await login(form.email, form.password, requires2FA ? form.twoFactorCode : undefined);
       
+      // Handle the 2FA view branch cleanly if the hook flags it
       if (result && result.requiresTwoFactor) {
         setRequires2FA(true);
         return;
       }
 
-      // 🚀 FIXED: Programmatically route right here immediately upon a verified return response 
-      // instead of solely depending on the useEffect listener hook to prevent state crash reloads
-      if (result && result.user) {
-        router.replace(result.user.role === 'admin' ? '/admin/dashboard' : '/portal/dashboard');
-      }
+      // 🚀 FIXED: Removed the inline type-unsafe result parsing block.
+      // Your active useEffect hook sitting above will securely intercept the hook's 
+      // authenticated context variables and complete the user route redirection!
     } catch (err: any) {
-      // 🚀 FIXED: Gracefully extract error text fields thrown by your ApiError framework classes
       setError(err?.message || 'Login failed. Please try again.');
     } finally {
       setSubmitting(false);

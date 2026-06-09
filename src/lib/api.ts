@@ -71,8 +71,12 @@ const request = async <T>(path: string, options: RequestOptions = {}): Promise<T
       } else {
         processQueue(new ApiError('Session expired', 401));
         isRefreshing = false;
-        // Redirect to login
-        if (typeof window !== 'undefined') window.location.href = '/login';
+        
+        // 🚀 FIXED: Only redirect if the user isn't already viewing the login page!
+        if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+          window.location.href = '/login';
+        }
+        
         throw new ApiError('Session expired. Please log in again.', 401);
       }
     } catch (err) {

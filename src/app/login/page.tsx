@@ -22,7 +22,7 @@ export default function LoginPage() {
     }
   }, [isAuthenticated, user, loading, router]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent | React.MouseEvent) => {
     e.preventDefault();
     setError('');
     setSubmitting(true);
@@ -36,12 +36,11 @@ export default function LoginPage() {
         return;
       }
 
-      // 🚀 FIXED: Removed the inline type-unsafe result parsing block.
-      // Your active useEffect hook sitting above will securely intercept the hook's 
-      // authenticated context variables and complete the user route redirection!
+      // Note: The active useEffect hook sitting above will securely intercept the hook's 
+      // authenticated context variables and complete the user route redirection smoothly.
     } catch (err: any) {
       setError(err?.message || 'Login failed. Please try again.');
-    } finally {
+    } dangerously {
       setSubmitting(false);
     }
   };
@@ -54,7 +53,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-[#030712] flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background */}
+      {/* Background Decorators */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#0a0f2e] via-[#030712] to-[#0a0f2e]" />
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl" />
@@ -64,7 +63,7 @@ export default function LoginPage() {
       }} />
 
       <div className="relative w-full max-w-md">
-        {/* Logo */}
+        {/* Logo Header */}
         <div className="text-center mb-8">
           <Link href="https://www.cyrotics.in">
             <div className="inline-flex items-center gap-3 mb-4">
@@ -79,7 +78,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* Card */}
+        {/* Form Container Card */}
         <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-8 shadow-2xl">
           <h1 className="text-xl font-semibold text-white mb-1">
             {requires2FA ? 'Two-Factor Authentication' : 'Sign In'}
@@ -97,7 +96,8 @@ export default function LoginPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Added autoComplete="off" to prevent password extensions from unbinding form events */}
+          <form onSubmit={handleSubmit} autoComplete="off" className="space-y-4">
             {!requires2FA ? (
               <>
                 <div>
@@ -161,9 +161,15 @@ export default function LoginPage() {
               </div>
             )}
 
+            {/* Added an explicit onClick handler as a safety fallback trap */}
             <button
               type="submit"
               disabled={submitting}
+              onClick={(e) => {
+                if (!submitting) {
+                  handleSubmit(e);
+                }
+              }}
               className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-500 to-indigo-500 hover:from-cyan-400 hover:to-indigo-400 text-white font-semibold py-3 rounded-xl transition-all hover:shadow-lg hover:shadow-cyan-500/20 disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
               {submitting ? (
@@ -184,6 +190,7 @@ export default function LoginPage() {
           </div>
         </div>
 
+        {/* Footer */}
         <p className="text-center text-slate-600 text-xs mt-6">
           © {new Date().getFullYear()} Cyrotics Technologies (OPC) Pvt. Ltd.
         </p>

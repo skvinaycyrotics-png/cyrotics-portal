@@ -4,8 +4,8 @@
 // Handles: base URL, credentials (cookies), auto token refresh, error parsing.
 // ─────────────────────────────────────────────────────────────────────────────
 
-// 🚀 FIXED: Set fallback to your brand custom subdomain to make cookie storage first-party safe
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.cyrotics.in/api';
+// ✅ FIXED: Hardcoded your custom brand subdomain to force-break the old onrender cache loop
+const API_BASE = 'https://api.cyrotics.in/api';
 
 type RequestOptions = {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
@@ -46,7 +46,7 @@ const request = async <T>(path: string, options: RequestOptions = {}): Promise<T
 
   const fetchOptions: RequestInit = {
     method,
-    credentials: 'include', // send cookies safely across shared root domains (.cyrotics.in)
+    credentials: 'include', // 🔥 CRITICAL: Allows first-party cookies to be sent across subdomains
     headers: { 'Content-Type': 'application/json' },
     ...(body ? { body: JSON.stringify(body) } : {}),
   };
@@ -54,7 +54,7 @@ const request = async <T>(path: string, options: RequestOptions = {}): Promise<T
   const url = buildUrl(path, params);
   let response = await fetch(url, fetchOptions);
 
-  // Auto-refresh on 401
+  // Auto-refresh on 401 Unauthorized
   if (response.status === 401 && path !== '/auth/login' && path !== '/auth/refresh') {
     if (isRefreshing) {
       return new Promise((resolve, reject) => {
@@ -73,7 +73,7 @@ const request = async <T>(path: string, options: RequestOptions = {}): Promise<T
         processQueue(new ApiError('Session expired', 401));
         isRefreshing = false;
         
-        // 🚀 FIXED: Only redirect if the user isn't already viewing the login page!
+        // ✅ FIXED: Safely redirecting to login route on session drop
         if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
           window.location.href = '/login';
         }

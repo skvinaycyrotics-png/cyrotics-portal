@@ -15,12 +15,18 @@ export default function LoginPage() {
   const [requires2FA, setRequires2FA] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [mounted, setMounted] = useState(false);
+
+  // Set mounted status on client load to prevent extension conflicts
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
-    if (!loading && isAuthenticated && user) {
+    if (mounted && !loading && isAuthenticated && user) {
       router.replace(user.role === 'admin' ? '/admin/dashboard' : '/portal/dashboard');
     }
-  }, [isAuthenticated, user, loading, router]);
+  }, [isAuthenticated, user, loading, router, mounted]);
 
   const handleSubmit = async (e: React.FormEvent | React.MouseEvent) => {
     e.preventDefault();
@@ -35,9 +41,6 @@ export default function LoginPage() {
         setRequires2FA(true);
         return;
       }
-
-      // Note: The active useEffect hook sitting above will securely intercept the hook's 
-      // authenticated context variables and complete the user route redirection smoothly.
     } catch (err: any) {
       setError(err?.message || 'Login failed. Please try again.');
     } finally {
@@ -45,7 +48,7 @@ export default function LoginPage() {
     }
   };
 
-  if (loading) return (
+  if (loading || !mounted) return (
     <div className="min-h-screen bg-[#030712] flex items-center justify-center">
       <Loader2 className="h-8 w-8 animate-spin text-cyan-400" />
     </div>
@@ -78,8 +81,8 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* Form Container Card */}
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-8 shadow-2xl">
+        {/* Form Container Card - Elevated with relative z-10 to catch click events */}
+        <div className="relative z-10 bg-slate-900/60 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-8 shadow-2xl">
           <h1 className="text-xl font-semibold text-white mb-1">
             {requires2FA ? 'Two-Factor Authentication' : 'Sign In'}
           </h1>
@@ -96,7 +99,6 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* Added autoComplete="off" to prevent password extensions from unbinding form events */}
           <form onSubmit={handleSubmit} autoComplete="off" className="space-y-4">
             {!requires2FA ? (
               <>
@@ -161,7 +163,7 @@ export default function LoginPage() {
               </div>
             )}
 
-            {/* Added an explicit onClick handler as a safety fallback trap */}
+            {/* Direct click fallback trap handler */}
             <button
               type="submit"
               disabled={submitting}

@@ -4,7 +4,8 @@
 // Handles: base URL, credentials (cookies), auto token refresh, error parsing.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://cyrotics-backend.onrender.com/api';
+// 🚀 FIXED: Set fallback to your brand custom subdomain to make cookie storage first-party safe
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.cyrotics.in/api';
 
 type RequestOptions = {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
@@ -45,7 +46,7 @@ const request = async <T>(path: string, options: RequestOptions = {}): Promise<T
 
   const fetchOptions: RequestInit = {
     method,
-    credentials: 'include', // send cookies
+    credentials: 'include', // send cookies safely across shared root domains (.cyrotics.in)
     headers: { 'Content-Type': 'application/json' },
     ...(body ? { body: JSON.stringify(body) } : {}),
   };
